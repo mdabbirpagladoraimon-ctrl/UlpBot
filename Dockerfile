@@ -1,19 +1,15 @@
-services:
-  - type: worker
-    name: ulp-global-bot
-    env: docker
-    plan: starter # Change to your paid plan
-    autoDeploy: true
-    envVars:
-      - key: BOT_TOKEN
-        sync: false
-      - key: API_ID
-        sync: false
-      - key: API_HASH
-        sync: false
-      - key: SESSION_STRING
-        sync: false
-    disk:
-      name: combo-data
-      mountPath: /app/data
-      sizeGB: 10
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y \
+    unrar-free \
+    p7zip-full \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "bot.py"]
